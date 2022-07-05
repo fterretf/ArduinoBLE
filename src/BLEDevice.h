@@ -49,6 +49,33 @@ public:
 
   virtual String address() const;
 
+    virtual uint32_t macAddress4Byte() const{ //fter first 4 bytes of mac address
+    uint32_t a = 0;
+    a = _address[2]|_address[3]<<8|_address[4]<<16|_address[5]<<24;
+    return a;
+  };  
+  virtual uint16_t sensorAddress() const{ //fter
+    uint16_t a = 0;
+    a = _address[0]|_address[1]<<8;
+    return a;
+  };  
+  virtual uint32_t sensorAddress32() const{ //fter
+    uint32_t a = 0;
+    a = _address[0]|_address[1]<<8|_address[2]<<16|_address[3]<<24;
+    return a;
+  };  
+
+  struct sEirData {
+    uint8_t eirData[31 * 2];
+    uint8_t eirDataLength;
+  };  
+  virtual sEirData eirData() const{ //fter 
+    sEirData s;
+    memcpy(s.eirData,_eirData,_eirDataLength);
+    s.eirDataLength = _eirDataLength;
+    return s;
+  }
+
   bool hasLocalName() const;
     
   bool hasAdvertisedServiceUuid() const;

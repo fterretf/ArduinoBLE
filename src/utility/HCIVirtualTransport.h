@@ -17,45 +17,34 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef _BLE_LOCAL_ATTRIBUTE_H_
-#define _BLE_LOCAL_ATTRIBUTE_H_
+#include "HCITransport.h"
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 
-#include "utility/BLEUuid.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/stream_buffer.h"
 
-#define BLE_ATTRIBUTE_TYPE_SIZE 2
+#include "esp_bt.h"
+#include "nvs_flash.h"
 
-enum BLEAttributeType {
-  BLETypeUnknown        = 0x0000,
+#include "esp32-hal-bt.h" // this is needed to disable bluedroid
 
-  BLETypeService        = 0x2800,
-  BLETypeCharacteristic = 0x2803,
-  BLETypeDescriptor     = 0x2900
-};
 
-class BLELocalAttribute
-{
+class HCIVirtualTransportClass : public HCITransportInterface {
 public:
-  BLELocalAttribute(const char* uuid);
-  virtual ~BLELocalAttribute();
+  HCIVirtualTransportClass();
+  virtual ~HCIVirtualTransportClass();
 
-  const char* uuid() const;
+  virtual int begin();
+  virtual void end();
 
-  virtual enum BLEAttributeType type() const;
+  virtual void wait(unsigned long timeout);
 
-  int retain();
-  int release();
-  bool active();
+  virtual int available();
+  virtual int peek();
+  virtual int read();
 
-protected:
-  friend class ATTClass;
-  friend class GATTClass;
-
-  const uint8_t* uuidData() const;
-  uint8_t uuidLength() const;
-
-private:
-  BLEUuid _uuid;
-  int _refCount;
+  virtual size_t write(const uint8_t* data, size_t length);
 };
-
-#endif
